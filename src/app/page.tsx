@@ -1,21 +1,61 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">TimeTracker Pro</h1>
-        <p className="text-gray-600 mb-8">Professional Time Tracking Application</p>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px',
+      fontFamily: 'system-ui, sans-serif'
+    }}>
+      <div style={{
+        maxWidth: '400px',
+        width: '100%',
+        textAlign: 'center'
+      }}>
+        <h1 style={{
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          color: '#1f2937',
+          marginBottom: '1rem'
+        }}>TimeTracker Pro</h1>
         
-        <div className="space-y-4">
-          <Link 
+        <p style={{
+          color: '#6b7280',
+          marginBottom: '2rem',
+          fontSize: '1.1rem'
+        }}>Professional Time Tracking Application</p>        
+        
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem'
+        }}>
+          <Link
             href="/auth/login"
-            className="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            style={{
+              display: 'block',
+              width: '100%',
+              background: '#2563eb',
+              color: 'white',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: '600',
+              transition: 'background 0.2s'
+            }}
           >
             Zum Login
           </Link>
-          
-          <div className="text-sm text-gray-500">
+
+          <div style={{
+            fontSize: '0.875rem',
+            color: '#6b7280',
+            marginTop: '1rem'
+          }}>
             <p>Demo Accounts:</p>
             <p>demo@company.com / demo123</p>
             <p>manager@company.com / demo123</p>
