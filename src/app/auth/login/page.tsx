@@ -78,8 +78,8 @@ export default function LoginForm() {
           localStorage.setItem('token', data.token); // Falls du JWT verwendest
         }
         
-        // Zum Dashboard weiterleiten
-        router.push('/dashboard');
+        // 🔥 FIX: Verwende window.location.href statt router.push
+        window.location.href = '/dashboard';
         
       } else {
         throw new Error(data.message || 'Anmeldung fehlgeschlagen');
@@ -97,9 +97,11 @@ export default function LoginForm() {
         localStorage.setItem('user', JSON.stringify({
           id: '1',
           name: 'Test User',
-          email: formData.email
+          email: formData.email,
+          role: formData.email.includes('manager') ? 'manager' : 'employee'
         }));
-        router.push('/dashboard');
+        // 🔥 FIX: Auch hier window.location.href verwenden
+        window.location.href = '/dashboard';
       }
     } finally {
       setIsLoading(false);
