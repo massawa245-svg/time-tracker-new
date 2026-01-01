@@ -1,227 +1,135 @@
-﻿'use client'
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+﻿"use client"
 
-// User Interface - Angepasst an dein erweitertes User Model
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+
 interface User {
   id: string
+  _id?: string
+  userId?: string
   name: string
   email: string
-  role: 'employee' | 'manager' | 'admin'
-  department?: string
-  position?: string
-  avatar?: string
-  timezone?: string
-  isActive?: boolean
-  lastLogin?: Date
+  role: string
 }
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<boolean>
-  logout: () => void
   isLoading: boolean
-  isManager: boolean
-  isAdmin: boolean
-  hasRole: (role: string) => boolean
-  hasPermission: (permission: string) => boolean
-  refreshUser: () => Promise<void>
+  login: (email: string, password: string) => Promise<void>
+  logout: () => void
+  setUser: (user: User | null) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Beim Start: Auth Status prüfen
+  // Beim ersten Laden: User aus localStorage holen
   useEffect(() => {
-    checkAuthStatus()
+    console.log(' AuthProvider initializing...')
+    
+    try {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) {
+        console.log(' Found user in localStorage:', storedUser)
+        setUser(JSON.parse(storedUser))
+      } else {
+        console.log('ℹ No user in localStorage')
+      }
+    } catch (error) {
+      console.error(' Error loading user from localStorage:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
-  const checkAuthStatus = async () => {
+  // User in localStorage speichern wenn sich ändert
+  useEffect(() => {
+    if (user) {
+      console.log(' Saving user to localStorage:', user)
+      localStorage.setItem('user', JSON.stringify(user))
+    } else {
+      console.log(' Removing user from localStorage')
+      localStorage.removeItem('user')
+    }
+  }, [user])
+
+  const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      // Fallback: Aus localStorage laden
-      const savedUser = localStorage.getItem('currentUser')
-      if (savedUser) {
-        const userData = JSON.parse(savedUser)
-        setUser(userData)
+      console.log(' Attempting login for:', email)
+      
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed')
       }
+
+      console.log(' Login successful, user data:', data.user)
+      
+      // WICHTIG: Stelle sicher dass alle nötigen Felder vorhanden sind
+      const userData: User = {
+        id: data.user._id || data.user.id || data.user.userId || data.user.email,
+        _id: data.user._id,
+        userId: data.user.userId || data.user._id || data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role
+      }
+      
+      console.log('👤 Processed user data:', userData)
+      setUser(userData)
+      
+      // Auch in localStorage speichern
+      localStorage.setItem('user', JSON.stringify(userData))
+      
     } catch (error) {
-      console.error('Auth check error:', error)
+      console.error('❌ Login error:', error)
+      throw error
     } finally {
       setIsLoading(false)
     }
   }
 
-  // User Daten aktualisieren
-  const refreshUser = async () => {
-    try {
-      const savedUser = localStorage.getItem('currentUser')
-      if (savedUser) {
-        setUser(JSON.parse(savedUser))
-      }
-    } catch (error) {
-      console.error('Refresh user error:', error)
-    }
+  const logout = () => {
+    console.log('🚪 Logging out user:', user?.email)
+    setUser(null)
+    localStorage.removeItem('user')
   }
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true)
-    
-    try {
-      console.log(' Using mock login (development mode)')
-      // Mock Login verwenden
-      return await mockLogin(email, password)
-    } catch (error) {
-      console.error('Login error:', error)
-      // Fallback zu Mock-Login
-      return await mockLogin(email, password)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Mock Login für Entwicklung
-  const mockLogin = async (email: string, password: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    if (email && password) {
-      const emailLower = email.toLowerCase()
-      let role: 'employee' | 'manager' | 'admin' = 'employee'
-      let name = 'Demo User'
-      let department = 'Development'
-      let position = 'Software Engineer'
-      
-      // Rollen-Erkennung erweitert
-      if (emailLower.includes('admin') || emailLower.includes('administrator')) {
-        role = 'admin'
-        name = 'Admin User'
-        department = 'IT'
-        position = 'System Administrator'
-      } else if (
-        emailLower.includes('manager') || 
-        emailLower.includes('chef') || 
-        emailLower.includes('teamleiter') ||
-        emailLower.includes('leitung') ||
-        emailLower.includes('lead') ||
-        emailLower.includes('david')
-      ) {
-        role = 'manager'
-        name = 'Demo Manager'
-        department = 'Operations'
-        position = 'Teamleiter'
-      } else if (emailLower.includes('hr') || emailLower.includes('personal')) {
-        department = 'Human Resources'
-        position = 'HR Manager'
-      }
-      
-      const mockUser: User = {
-        id: '1',
-        name: name,
-        email: email,
-        role: role,
-        department: department,
-        position: position,
-        timezone: 'Europe/Berlin',
-        isActive: true,
-        lastLogin: new Date()
-      }
-      
-      setUser(mockUser)
-      localStorage.setItem('currentUser', JSON.stringify(mockUser))
-      
-      console.log(' Mock login successful:', mockUser)
-      return true
-    }
-    
-    return false
-  }
-
-  const logout = async () => {
-    try {
-      // Lokal ausloggen
-      setUser(null)
-      localStorage.removeItem('currentUser')
-      sessionStorage.removeItem('currentUser')
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
-  }
-
-  // ERWEITERTE Rollen-Prüfungen
-  const isManager = user?.role === 'manager' || user?.role === 'admin'
-  const isAdmin = user?.role === 'admin'
-  
-  const hasRole = (role: string): boolean => {
-    return user?.role === role
-  }
-
-  // Berechtigungs-Prüfung für komplexere Szenarien
-  const hasPermission = (permission: string): boolean => {
-    if (!user) return false
-    
-    // Permission Mapping basierend auf Rolle
-    const permissions: { [key: string]: string[] } = {
-      employee: [
-        'view_schedule', 
-        'track_time', 
-        'view_own_data',
-        'edit_own_profile'
-      ],
-      manager: [
-        'view_schedule', 
-        'track_time', 
-        'view_own_data',
-        'edit_own_profile',
-        'manage_schedule', 
-        'view_team_data', 
-        'approve_requests',
-        'export_reports'
-      ],
-      admin: [
-        'view_schedule', 
-        'track_time', 
-        'view_own_data',
-        'edit_own_profile',
-        'manage_schedule', 
-        'view_team_data', 
-        'approve_requests',
-        'export_reports',
-        'manage_users', 
-        'system_settings',
-        'view_analytics',
-        'manage_departments'
-      ]
-    }
-    
-    const userPermissions = permissions[user.role] || []
-    return userPermissions.includes(permission)
-  }
-
-  const value: AuthContextType = {
-    user,
-    login,
-    logout,
-    isLoading,
-    isManager,
-    isAdmin,
-    hasRole,
-    hasPermission,
-    refreshUser
+  // Manuelle User Setzung (für Debugging)
+  const manualSetUser = (userData: User | null) => {
+    console.log('🔧 Manually setting user:', userData)
+    setUser(userData)
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isLoading, 
+      login, 
+      logout,
+      setUser: manualSetUser
+    }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext)
+  
   if (context === undefined) {
+    console.error('❌ useAuth must be used within an AuthProvider')
     throw new Error('useAuth must be used within an AuthProvider')
   }
+  
   return context
 }

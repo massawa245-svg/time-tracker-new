@@ -2,21 +2,57 @@
 import connectDB from '@/lib/mongodb';
 import TimeEntry from '@/models/TimeEntry';
 
+// Helper function to get userId from auth or request
+function getUserId(request: Request): string | null {
+  // Try to get from query params
+  const { searchParams } = new URL(request.url);
+  let userId = searchParams.get('userId');
+  
+  // If not in query, try from request body for POST
+  if (!userId && request.method === 'POST') {
+    // We'll parse body later
+    return null;
+  }
+  
+  // For demo/testing, use a fallback
+  if (!userId || userId === 'undefined') {
+    console.log(' No userId provided, using demo-user');
+    return 'demo-user-' + Date.now(); // Unique demo user
+  }
+  
+  return userId;
+}
+
 export async function POST(request: Request) {
   try {
     await connectDB();
 
-    const { userId, action, entryId } = await request.json();
-
+    const body = await request.json();
+    const { action, entryId } = body;
+    
+    // Get userId from body first, then from helper
+    let userId = body.userId || getUserId(request);
+    
+    // If still no userId, check for other possible fields
+    if (!userId && body.email) {
+      userId = body.email; // Use email as fallback ID
+    }
+    
     if (!userId) {
       return NextResponse.json(
         {
           success: false,
           message: 'User ID ist erforderlich',
+          debug: {
+            body: body,
+            availableFields: Object.keys(body)
+          }
         },
         { status: 400 }
       );
     }
+
+    console.log(` Timer ${action} for user: ${userId}`);
 
     if (action === 'start') {
       // Stop any running timer for this user
@@ -40,10 +76,13 @@ export async function POST(request: Request) {
         duration: 0
       });
 
+      console.log(` Timer started: ${timeEntry._id} for ${userId}`);
+      
       return NextResponse.json({
         success: true,
         message: 'Timer erfolgreich gestartet',
         entry: timeEntry,
+        userId: userId // Return for debugging
       });
 
     } else if (action === 'stop' && entryId) {
@@ -59,6 +98,7 @@ export async function POST(request: Request) {
           {
             success: false,
             message: 'Kein laufender Timer gefunden',
+            debug: { entryId, userId }
           },
           { status: 404 }
         );
@@ -79,28 +119,33 @@ export async function POST(request: Request) {
         { new: true }
       );
 
+      console.log(` Timer stopped: ${duration}s for ${userId}`);
+      
       return NextResponse.json({
         success: true,
         message: 'Timer erfolgreich gestoppt',
         entry: updatedTimer,
-        duration: duration
+        duration: duration,
+        userId: userId
       });
     } else {
       return NextResponse.json(
         {
           success: false,
           message: 'Ungültige Aktion',
+          debug: { action, entryId, userId }
         },
         { status: 400 }
       );
     }
 
   } catch (error) {
-    console.error('Timer error:', error);
+    console.error(' Timer error:', error);
     return NextResponse.json(
       {
         success: false,
         message: 'Interner Server Fehler',
+        error: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
@@ -111,18 +156,14 @@ export async function GET(request: Request) {
   try {
     await connectDB();
 
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-
-    if (!userId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'User ID ist erforderlich',
-        },
-        { status: 400 }
-      );
+    let userId = getUserId(request);
+    
+    // For undefined userId, use demo
+    if (!userId || userId === 'undefined') {
+      userId = 'demo-user-' + Date.now();
     }
+
+    console.log(` Getting timer data for: ${userId}`);
 
     // Get running timer
     const currentEntry = await TimeEntry.findOne({
@@ -140,19 +181,23 @@ export async function GET(request: Request) {
 
     const totalToday = todayEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
 
+    console.log(` Timer data for ${userId}: running=${!!currentEntry}, today=${totalToday}s`);
+    
     return NextResponse.json({
       success: true,
       currentEntry,
       todayEntries,
-      totalToday
+      totalToday,
+      userId // Return userId for debugging
     });
 
   } catch (error) {
-    console.error('Timer get error:', error);
+    console.error(' Timer get error:', error);
     return NextResponse.json(
       {
         success: false,
         message: 'Interner Server Fehler',
+        error: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

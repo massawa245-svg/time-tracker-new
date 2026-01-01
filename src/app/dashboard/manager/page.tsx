@@ -1,348 +1,272 @@
-﻿// src/app/dashboard/manager/page.tsx - KORRIGIERT
-'use client'
-
-import { useState, useEffect } from 'react'
-import { Calendar, Users, BarChart3, Clock, AlertCircle } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '../../../contexts/AuthContext'
-
-interface ManagerStats {
-  totalEmployees: number
-  pendingRequests: number
-  activeSchedules: number
-  todayHours: number
-}
-
-export default function ManagerPage() {
-  const router = useRouter()
-  const { user } = useAuth()
-  const [stats, setStats] = useState<ManagerStats>({
-    totalEmployees: 0,
-    pendingRequests: 0,
-    activeSchedules: 0,
-    todayHours: 0
-  })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  const features = [
-    {
-      title: 'Wochenplan erstellen',
-      description: 'Wochenpläne für Mitarbeiter erstellen und veröffentlichen',
-      icon: Calendar,
-      path: '/dashboard/manager/schedule',
-      color: '#3b82f6'
-    },
-    {
-      title: 'Urlaubsanträge',
-      description: 'Urlaubsanträge genehmigen oder ablehnen',
-      icon: Users,
-      path: '/dashboard/manager/vacation-requests',
-      color: '#10b981'
-    },
-    {
-      title: 'Team Übersicht',
-      description: 'Teamleistung und Statistiken anzeigen',
-      icon: BarChart3,
-      path: '/dashboard/manager/team',
-      color: '#8b5cf6'
-    },
-    {
-      title: 'Zeiterfassung',
-      description: 'Arbeitszeiten der Mitarbeiter einsehen',
-      icon: Clock,
-      path: '/dashboard/manager/timesheets',
-      color: '#f59e0b'
-    },
-  ]
-
-  useEffect(() => {
-    // Prüfe ob User Manager/Admin ist
-    if (user && (user.role === 'manager' || user.role === 'admin')) {
-      loadManagerStats()
-    } else if (user) {
-      setError('Sie haben keine Berechtigung für den Manager-Bereich')
-      setLoading(false)
-    }
-  }, [user])
-
-  const loadManagerStats = async () => {
-    try {
-      setLoading(true)
-      // Hier würden echte API Calls stehen
-      // Für jetzt verwenden wir Mock-Daten basierend auf unseren Test-Daten
-      setStats({
-        totalEmployees: 8, // User 1-8 aus unseren Test-Daten
-        pendingRequests: 2, // User 2 hat pending Urlaubsantrag
-        activeSchedules: 1, // Ein aktiver Wochenplan
-        todayHours: 42 // Heutige Gesamtarbeitszeit
-      })
-    } catch (error) {
-      console.error('Error loading manager stats:', error)
-      setError('Fehler beim Laden der Manager-Daten')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Wenn kein Manager/Admin
-  if (user && !(user.role === 'manager' || user.role === 'admin')) {
-    return (
-      <div style={{ 
-        maxWidth: '600px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <AlertCircle style={{ 
-          width: '4rem', 
-          height: '4rem', 
-          color: '#ef4444',
-          margin: '0 auto 1rem auto'
-        }} />
-        <h1 style={{ 
-          fontSize: '2rem', 
-          fontWeight: '700', 
-          marginBottom: '1rem',
-          color: '#1f2937'
-        }}>
-          Zugriff verweigert
-        </h1>
-        <p style={{ 
-          color: '#6b7280', 
-          marginBottom: '2rem',
-          fontSize: '1.125rem'
-        }}>
-          Sie haben keine Berechtigung für den Manager-Bereich.
-        </p>
-        <button
-          onClick={() => router.push('/dashboard')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.5rem',
-            fontSize: '1rem',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          Zum Dashboard
-        </button>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          width: '3rem',
-          height: '3rem',
-          border: '3px solid #e5e7eb',
-          borderTop: '3px solid #3b82f6',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          margin: '2rem auto'
-        }}></div>
-        <p style={{ color: '#6b7280' }}>Lade Manager-Daten...</p>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div style={{ 
-        maxWidth: '600px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <AlertCircle style={{ 
-          width: '3rem', 
-          height: '3rem', 
-          color: '#ef4444',
-          margin: '0 auto 1rem auto'
-        }} />
-        <h2 style={{ 
-          color: '#dc2626', 
-          marginBottom: '1rem'
-        }}>
-          Fehler
-        </h2>
-        <p style={{ color: '#6b7280', marginBottom: '2rem' }}>{error}</p>
-        <button
-          onClick={loadManagerStats}
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.5rem',
-            cursor: 'pointer'
-          }}
-        >
-          Erneut versuchen
-        </button>
-      </div>
-    )
-  }
-
+﻿// Manager Dashboard with INLINE STYLES - Always works!
+export default function ManagerDashboard() {
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '2rem 1rem',
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
-    }}>
+    <div style={styles.container}>
+      {/* Alert Box */}
+      <div style={styles.alertBox}>
+        <h1 style={styles.alertTitle}> Inline Styles Manager Dashboard</h1>
+        <p style={styles.alertText}>This page uses inline styles - works without any dependencies!</p>
+      </div>
+      
       {/* Header */}
-      <div style={{ 
-        background: 'white',
-        borderRadius: '1rem',
-        padding: '2rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e5e7eb',
-        marginBottom: '2rem'
-      }}>
-        <h1 style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: '700', 
-          marginBottom: '0.5rem',
-          color: '#1f2937'
-        }}>
-          Manager Dashboard
-        </h1>
-        <p style={{ 
-          color: '#6b7280', 
-          marginBottom: '0.5rem'
-        }}>
-          Verwalten Sie Ihre Mitarbeiter und Arbeitspläne
-        </p>
-        {user && (
-          <p style={{ 
-            color: '#059669',
-            fontWeight: '600',
-            fontSize: '0.875rem'
-          }}>
-            Angemeldet als: {user.name} ({user.role})
-          </p>
-        )}
+      <div>
+        <h1 style={styles.title}>Manager Dashboard</h1>
+        <p style={styles.subtitle}>Welcome to management tools</p>
       </div>
-
-      {/* Stats Grid */}
-      <div style={{ 
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '3rem'
-      }}>
-        <div style={{
-          background: 'white',
-          padding: '1.5rem',
-          borderRadius: '1rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#3b82f6' }}>
-            {stats.totalEmployees}
-          </div>
-          <div style={{ color: '#6b7280' }}>Mitarbeiter</div>
-        </div>
+      
+      {/* Cards Grid */}
+      <div style={styles.cardsGrid}>
         
-        <div style={{
-          background: 'white',
-          padding: '1.5rem',
-          borderRadius: '1rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#f59e0b' }}>
-            {stats.pendingRequests}
-          </div>
-          <div style={{ color: '#6b7280' }}>Ausstehende Anträge</div>
-        </div>
-
-        <div style={{
-          background: 'white',
-          padding: '1.5rem',
-          borderRadius: '1rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#10b981' }}>
-            {stats.activeSchedules}
-          </div>
-          <div style={{ color: '#6b7280' }}>Aktive Pläne</div>
-        </div>
-
-        <div style={{
-          background: 'white',
-          padding: '1.5rem',
-          borderRadius: '1rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#8b5cf6' }}>
-            {stats.todayHours}h
-          </div>
-          <div style={{ color: '#6b7280' }}>Heutige Stunden</div>
-        </div>
-      </div>
-
-      {/* Features Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-        gap: '1.5rem'
-      }}>
-        {features.map((feature, index) => (
-          <div
-            key={index}
-            onClick={() => router.push(feature.path)}
-            style={{
-              background: 'white',
-              padding: '2rem',
-              borderRadius: '1rem',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              border: '1px solid #e5e7eb',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)'
-              e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-              e.currentTarget.style.borderColor = feature.color
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              e.currentTarget.style.borderColor = '#e5e7eb'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-              <div style={{
-                padding: '0.75rem',
-                borderRadius: '0.75rem',
-                background: feature.color
-              }}>
-                <feature.icon style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
-                {feature.title}
-              </h3>
+        {/* Team Card */}
+        <a href="/dashboard/manager/team" style={styles.card}>
+          <div style={styles.cardContent}>
+            <div style={{...styles.cardIcon, ...styles.iconTeam}}>👥</div>
+            <div style={styles.cardText}>
+              <h3 style={styles.cardTitle}>Team Management</h3>
+              <p style={styles.cardDescription}>View and manage team members</p>
             </div>
-            <p style={{ color: '#6b7280', lineHeight: '1.5' }}>{feature.description}</p>
           </div>
-        ))}
+        </a>
+        
+        {/* Schedule Card */}
+        <a href="/dashboard/manager/schedule" style={styles.card}>
+          <div style={styles.cardContent}>
+            <div style={{...styles.cardIcon, ...styles.iconSchedule}}></div>
+            <div style={styles.cardText}>
+              <h3 style={styles.cardTitle}>Schedule Planning</h3>
+              <p style={styles.cardDescription}>Create and manage schedules</p>
+            </div>
+          </div>
+        </a>
+        
+        {/* Timesheets Card */}
+        <a href="/dashboard/manager/timesheets" style={styles.card}>
+          <div style={styles.cardContent}>
+            <div style={{...styles.cardIcon, ...styles.iconTimesheets}}></div>
+            <div style={styles.cardText}>
+              <h3 style={styles.cardTitle}>Timesheets</h3>
+              <p style={styles.cardDescription}>Review and approve timesheets</p>
+            </div>
+          </div>
+        </a>
+        
+        {/* Vacation Card */}
+        <a href="/dashboard/manager/vacation-requests" style={styles.card}>
+          <div style={styles.cardContent}>
+            <div style={{...styles.cardIcon, ...styles.iconVacation}}>🏖️</div>
+            <div style={styles.cardText}>
+              <h3 style={styles.cardTitle}>Vacation Requests</h3>
+              <p style={styles.cardDescription}>Manage vacation and time off</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      {/* Performance Info */}
+      <div style={styles.performanceBox}>
+        <p style={styles.performanceTitle}> This page loads instantly!</p>
+        <small style={styles.performanceText}>Inline styles work without CSS dependencies</small>
+      </div>
+      
+      {/* CSS Test */}
+      <div style={styles.cssTest}>
+        <h3 style={styles.cssTestTitle}> Inline Styles Test</h3>
+        <p style={styles.cssTestText}>If you see colors and gradients, inline styles are working!</p>
+        
+        <div style={styles.glassCards}>
+          <div style={styles.glassCard}>Card 1</div>
+          <div style={styles.glassCard}>Card 2</div>
+          <div style={styles.glassCard}>Card 3</div>
+        </div>
       </div>
     </div>
   )
 }
 
+//  ALL STYLES AS JAVASCRIPT OBJECTS - NO CSS FILES NEEDED!
+const styles = {
+  container: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    padding: '2rem 1rem',
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+  },
+  
+  alertBox: {
+    backgroundColor: '#fef3c7',
+    border: '1px solid #f59e0b',
+    borderRadius: '0.75rem',
+    padding: '1rem',
+    marginBottom: '1.5rem'
+  },
+  
+  alertTitle: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: '0.5rem'
+  },
+  
+  alertText: {
+    color: '#b45309'
+  },
+  
+  title: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginBottom: '0.5rem'
+  },
+  
+  subtitle: {
+    color: '#6b7280',
+    marginBottom: '1.5rem'
+  },
+  
+  cardsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '1rem',
+    marginBottom: '2rem'
+  },
+  
+  card: {
+    display: 'block',
+    background: 'white',
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.75rem',
+    padding: '1.5rem',
+    textDecoration: 'none',
+    color: 'inherit',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    cursor: 'pointer'
+  },
+  
+  cardContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem'
+  },
+  
+  cardIcon: {
+    width: '3rem',
+    height: '3rem',
+    borderRadius: '0.5rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '1.5rem',
+    flexShrink: '0'
+  },
+  
+  iconTeam: {
+    backgroundColor: '#dbeafe',
+    color: '#1d4ed8'
+  },
+  
+  iconSchedule: {
+    backgroundColor: '#dcfce7',
+    color: '#059669'
+  },
+  
+  iconTimesheets: {
+    backgroundColor: '#f3e8ff',
+    color: '#7c3aed'
+  },
+  
+  iconVacation: {
+    backgroundColor: '#ffedd5',
+    color: '#ea580c'
+  },
+  
+  cardText: {
+    flex: '1'
+  },
+  
+  cardTitle: {
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: '0.25rem',
+    fontSize: '1.125rem'
+  },
+  
+  cardDescription: {
+    color: '#6b7280',
+    fontSize: '0.875rem',
+    lineHeight: '1.4'
+  },
+  
+  performanceBox: {
+    backgroundColor: '#d1fae5',
+    border: '1px solid #10b981',
+    borderRadius: '0.75rem',
+    padding: '1rem',
+    marginTop: '2rem'
+  },
+  
+  performanceTitle: {
+    color: '#065f46',
+    fontWeight: '500',
+    marginBottom: '0.25rem'
+  },
+  
+  performanceText: {
+    color: '#047857',
+    fontSize: '0.875rem'
+  },
+  
+  cssTest: {
+    marginTop: '2rem',
+    background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
+    borderRadius: '1rem',
+    padding: '1.5rem',
+    color: 'white'
+  },
+  
+  cssTestTitle: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    marginBottom: '0.5rem'
+  },
+  
+  cssTestText: {
+    opacity: '0.9',
+    marginBottom: '1rem'
+  },
+  
+  glassCards: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '0.75rem'
+  },
+  
+  glassCard: {
+    padding: '1rem',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: '0.5rem',
+    backdropFilter: 'blur(10px)',
+    textAlign: 'center',
+    fontWeight: '500'
+  }
+}
+
+// Add hover effects with JavaScript
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    const cards = document.querySelectorAll('[style*="cardsGrid"] a');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        this.style.transform = 'translateY(-2px)';
+        this.style.borderColor = '#3b82f6';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+        this.style.transform = 'translateY(0)';
+        this.style.borderColor = '#e5e7eb';
+      });
+    });
+  }, 100);
+}

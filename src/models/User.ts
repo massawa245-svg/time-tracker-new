@@ -29,7 +29,7 @@ const UserSchema: Schema = new Schema(
     email: {
       type: String,
       required: [true, 'Please provide an email'],
-      unique: true,
+      unique: true,           // 👈 EINZIGER Index für email
       lowercase: true,
       trim: true,
       match: [
@@ -78,7 +78,7 @@ const UserSchema: Schema = new Schema(
 );
 
 // Index für bessere Performance
-UserSchema.index({ email: 1 });
+// UserSchema.index({ email: 1 }); // 👈 DIESE ZEILE LÖSCHEN (doppelt!)
 UserSchema.index({ role: 1 });
 UserSchema.index({ isActive: 1 });
 
