@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { motion } from 'framer-motion'
 import { LogOut, CheckCircle, Clock, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -16,7 +16,7 @@ export default function LogoutPage() {
     const performLogout = async () => {
       try {
         setStatus('loading')
-        await logout() // API Call wird hier durchgeführt
+        await logout() // API Call wird hier durchgefÃ¼hrt
         setStatus('success')
         
         // Automatischer Redirect nach Erfolg
@@ -261,3 +261,4 @@ if (typeof document !== 'undefined') {
   styleSheet.textContent = spinnerAnimation
   document.head.appendChild(styleSheet)
 }
+
