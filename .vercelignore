@@ -1,0 +1,9 @@
+﻿# Ignoriere nur Development Dateien
+node_modules/
+*.log
+.DS_Store
+.env.local
+.env*.local
+
+# NICHT ignorieren:
+# .next/   WICHTIG: Muss gebuildet werden!
