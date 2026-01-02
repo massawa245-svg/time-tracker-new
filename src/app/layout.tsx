@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider } from '../../contexts/AuthContext'
 
 export const metadata: Metadata = {
   title: "TimeTracker Pro",

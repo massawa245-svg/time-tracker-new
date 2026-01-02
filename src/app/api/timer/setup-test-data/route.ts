@@ -1,6 +1,6 @@
 ﻿import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import TimeEntry from '@/models/TimeEntry';
+import connectDB from '../../lib/mongodb';
+import TimeEntry from '../../models/TimeEntry';
 
 export async function GET() {
   try {

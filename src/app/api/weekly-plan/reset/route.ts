@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import WorkSchedule from '@/models/WorkSchedule';
-import { requireManager } from '@/lib/api-auth';
+import connectDB from '../../lib/mongodb';
+import WorkSchedule from '../../models/WorkSchedule';
+import { requireManager } from '../../lib/api-auth';
 
 export const POST = requireManager(async (request: NextRequest, user: any) => {
   try {

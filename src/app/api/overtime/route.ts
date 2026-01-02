@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import OvertimeBalance from '@/models/OvertimeBalance';
-import WorkSchedule from '@/models/WorkSchedule';
+import connectDB from '../../lib/mongodb';
+import OvertimeBalance from '../../models/OvertimeBalance';
+import WorkSchedule from '../../models/WorkSchedule';
 
 // GET - Monatliche Überstundenbilanz
 export async function GET(request: Request) {

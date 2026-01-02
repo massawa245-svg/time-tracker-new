@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import WorkSchedule from '@/models/WorkSchedule';
+import connectDB from '../../lib/mongodb';
+import WorkSchedule from '../../models/WorkSchedule';
 
 // ✅ GET - Wochenplan abrufen (FÜR ALLE USER)
 export async function GET() {

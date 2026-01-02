@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import User from '@/models/User';
-import PasswordResetToken from '@/models/PasswordResetToken';
+import connectDB from '../../lib/mongodb';
+import User from '../../models/User';
+import PasswordResetToken from '../../models/PasswordResetToken';
 
 export async function POST(request: Request) {
   try {
