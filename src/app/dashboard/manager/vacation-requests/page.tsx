@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle, Clock, User, Calendar, RefreshCw } from 'lucide-react'
-import { useAuth } from '../../../../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 
 interface VacationRequest {
   _id: string

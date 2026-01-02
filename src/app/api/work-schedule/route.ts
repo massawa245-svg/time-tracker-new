@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../lib/mongodb';
-import WorkSchedule from '../../models/WorkSchedule';
+import connectDB from '@lib/mongodb';
+import WorkSchedule from '@models/WorkSchedule';
 
 // ✅ GET - Holen des Arbeitsplans
 export async function GET(request: Request) {

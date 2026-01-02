@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { Clock, User, Calendar, Download } from 'lucide-react'
-import { useAuth } from '../../../../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 
 interface TimeEntry {
   _id: string

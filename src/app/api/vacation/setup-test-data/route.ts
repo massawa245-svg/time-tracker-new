@@ -1,6 +1,6 @@
 ﻿import { NextResponse } from 'next/server';
-import connectDB from '../../lib/mongodb';
-import VacationRequest from '../../models/VacationRequest';
+import connectDB from '@lib/mongodb';
+import VacationRequest from '@models/VacationRequest';
 
 export async function GET() {
   try {

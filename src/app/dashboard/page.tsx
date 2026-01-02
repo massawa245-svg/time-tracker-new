@@ -1,6 +1,6 @@
 ﻿// src/app/dashboard/page.tsx
 "use client"
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 import { Clock, Calendar, Plane, Users, BarChart3, Settings } from 'lucide-react'
 import Link from 'next/link'
 

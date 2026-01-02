@@ -1,10 +1,10 @@
-// src/components/Header.tsx
+﻿// src/components/Header.tsx
 "use client"
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Clock, BarChart3, Home, User, LogOut } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -68,7 +68,7 @@ export default function Header() {
               // EINGELOGGT
               <div style={userInfoDesktopStyle}>
                 <span style={welcomeTextStyle}>
-                  Hallo, <strong>{user.name}</strong>! 👋
+                  Hallo, <strong>{user.name}</strong>! ðŸ‘‹
                 </span>
                 <div style={userMenuContainerStyle}>
                   <button onClick={toggleUserMenu} style={userMenuButtonStyle}>
@@ -88,7 +88,7 @@ export default function Header() {
                           <div style={userNameStyle}>{user.name}</div>
                           <div style={userEmailStyle}>{user.email}</div>
                           <div style={userRoleStyle}>
-                            {user.role === 'manager' ? '👑 Manager' : '👨‍💼 Mitarbeiter'}
+                            {user.role === 'manager' ? 'ðŸ‘‘ Manager' : 'ðŸ‘¨â€ðŸ’¼ Mitarbeiter'}
                           </div>
                         </div>
                         
@@ -519,3 +519,4 @@ const mobileRegisterBtnStyle: React.CSSProperties = {
   border: '2px solid #60a5fa',
   transition: 'all 0.3s ease'
 }
+

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { Calendar, MapPin, Users, Clock, Send, FileText, TrendingUp } from 'lucide-react'
-import { useAuth } from '../../../contexts/AuthContext' //  useAuth import hinzufügen
+import { useAuth } from '@contexts/AuthContext' //  useAuth import hinzufügen
 
 interface VacationRequest {
   _id: string

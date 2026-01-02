@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Users, UserPlus, Mail, CheckCircle, Clock } from 'lucide-react'
-import { useAuth } from '../../../../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 
 interface TeamMember {
   id: string

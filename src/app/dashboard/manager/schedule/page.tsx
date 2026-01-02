@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { Calendar, Save, Send, Clock } from 'lucide-react'
-import { useAuth } from '../../../../contexts/AuthContext'
+import { useAuth } from '@contexts/AuthContext'
 
 interface DayPlan {
   start: string

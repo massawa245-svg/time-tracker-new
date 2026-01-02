@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import connectDB from '../../lib/mongodb';
-import WorkSchedule from '../../models/WorkSchedule';
-import { requireManager } from '../../lib/api-auth';
+import connectDB from '@lib/mongodb';
+import WorkSchedule from '@models/WorkSchedule';
+import { requireManager } from '@lib/api-auth';
 
 // GET - Team Stundenpläne anzeigen (NUR MANAGER)
 export const GET = requireManager(async (request: NextRequest, user: any) => {

@@ -1,6 +1,6 @@
 ﻿import { NextResponse } from 'next/server';
-import connectDB from '../../lib/mongodb';
-import TimeEntry from '../../models/TimeEntry';
+import connectDB from '@lib/mongodb';
+import TimeEntry from '@models/TimeEntry';
 
 // Helper function to get userId from auth or request
 function getUserId(request: Request): string | null {
