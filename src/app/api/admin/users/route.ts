@@ -3,7 +3,8 @@
 export async function GET() {
   return new Response(JSON.stringify({ 
     success: true, 
-    message: 'Admin API is temporarily simplified for deployment' 
+    message: 'Admin API is temporarily simplified',
+    users: []
   }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' }
